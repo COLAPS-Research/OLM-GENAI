@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open Learner Models in the Age of Generative AI @ AIED 2026, Festival of Learning, Seoul</title>
+
+  <style>
+    :root {
+      --ink: #0d0d0d;
+      --paper: #f5f0e8;
+      --accent: #c0392b;
+      --accent2: #1a4f8a;
+      --muted: #6b6459;
+      --rule: #cfc8bc;
+      --white: #fffdf9;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: var(--ink);
+      color: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 52px;
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    nav .logo { color: var(--paper); font-weight: 500; }
+    nav .logo span { color: var(--accent); }
+    nav ul { list-style: none; display: flex; gap: 2rem; }
+    nav ul a {
+      color: var(--paper);
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    nav ul a:hover { opacity: 1; }
+
+    /* ── HERO ── */
+    .hero {
+      margin-top: 52px;
+      min-height: calc(100vh - 52px);
+      display: grid;
+      grid-template-columns: 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-left {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 5rem 4rem 5rem 5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .hero-left::after {
+      content: '';
+      position: absolute;
+      right: -1px; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--accent);
+    }
+
+    .hero-tag {
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Georgia', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: #e8d5a3;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      font-weight: 300;
+      color: rgba(245, 240, 232, 0.65);
+      max-width: 28rem;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.82rem;
+    }
+
+    .hero-meta-item .label {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.66rem;
+      min-width: 4rem;
+    }
+
+    .hero-meta-item .value { color: var(--paper); }
+
+    /* ── SECTION COMMON ── */
+    section { padding: 6rem 0; }
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 3rem;
+    }
+
+    .section-label {
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'Georgia', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      color: var(--ink);
+    }
+
+    hr.rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 0 0 3rem 0;
+    }
+
+    /* ── ABOUT ── */
+    .about { background: var(--white); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-body p {
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+      font-size: 0.97rem;
+    }
+
+    .tension-box {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 2.5rem;
+      position: relative;
+    }
+
+    .tension-box::before {
+      content: '';
+      position: absolute;
+      top: -4px; left: -4px;
+      right: 4px; bottom: 4px;
+      border: 1px solid var(--accent);
+      pointer-events: none;
+    }
+
+    .tension-box h3 {
+      font-family: 'Georgia', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      color: #e8d5a3;
+      margin-bottom: 1.2rem;
+    }
+
+    .tension-box ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .tension-box ul li {
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: rgba(245, 240, 232, 0.8);
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .tension-box ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* ── PROGRAMME ── */
+    .programme { background: var(--paper); }
+
+    .timeline {
+      position: relative;
+      padding-left: 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 5.5rem;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: var(--rule);
+    }
+
+    .tl-item {
+      display: grid;
+      grid-template-columns: 5.5rem 1fr;
+      gap: 0 2rem;
+      margin-bottom: 0;
+      position: relative;
+    }
+
+    .tl-item + .tl-item .tl-body { border-top: 1px solid var(--rule); }
+
+    .tl-time {
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: right;
+      padding-top: 1.6rem;
+      padding-right: 1.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    .tl-dot {
+      position: absolute;
+      left: 5.5rem;
+      top: 1.8rem;
+      transform: translateX(-50%);
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--rule);
+      z-index: 1;
+    }
+
+    .tl-item:hover .tl-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .tl-body {
+      padding: 1.5rem 0;
+    }
+
+    .tl-title {
+      font-family: 'Georgia', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .tl-duration {
+      display: inline-block;
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--accent2);
+      padding: 0.15rem 0.5rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .tl-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      max-width: 55rem;
+    }
+
+    /* ── QUESTIONS ── */
+    .questions { background: var(--ink); color: var(--paper); }
+
+    .questions .section-title { color: var(--paper); }
+
+    .q-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: #2a2a2a;
+      border: 1px solid #2a2a2a;
+    }
+
+    .q-card {
+      background: var(--ink);
+      padding: 2.5rem;
+      transition: background 0.25s;
+      cursor: default;
+    }
+
+    .q-card:hover { background: #1a1a1a; }
+
+    .q-num {
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+    }
+
+    .q-text {
+      font-family: 'Georgia', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+      font-size: 1.05rem;
+      font-style: italic;
+      line-height: 1.5;
+      color: rgba(245, 240, 232, 0.9);
+    }
+
+    /* ── ORGANIZERS ── */
+    .organizers { background: var(--white); }
+
+    .org-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--rule);
+    }
+
+    .org-card {
+      background: var(--white);
+      padding: 2rem;
+    }
+
+    .org-initial {
+      font-family: 'Georgia', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--rule);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .org-name {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 0.2rem;
+    }
+
+    .org-affil {
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.68rem;
+      color: var(--accent2);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.8rem;
+    }
+
+    .org-bio {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── CALL TO ACTION ── */
+    .cta-section {
+      background: var(--accent);
+      color: var(--white);
+      padding: 5rem 0;
+      text-align: center;
+    }
+
+    .cta-section .section-label { color: rgba(255,255,255,0.7); }
+
+    .cta-section .section-title {
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+      font-size: 1rem;
+      opacity: 0.85;
+      max-width: 36rem;
+      margin: 0 auto 2.5rem;
+    }
+
+    .btn {
+      display: inline-block;
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.9rem 2.2rem;
+      border: 1.5px solid var(--white);
+      color: var(--white);
+      transition: background 0.2s, color 0.2s;
+      margin: 0 0.5rem;
+    }
+
+    .btn:hover {
+      background: var(--white);
+      color: var(--accent);
+    }
+
+    .btn.solid {
+      background: var(--white);
+      color: var(--accent);
+    }
+
+    .btn.solid:hover {
+      background: transparent;
+      color: var(--white);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      color: rgba(245, 240, 232, 0.4);
+      padding: 2.5rem 3rem;
+      font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer a { color: rgba(245, 240, 232, 0.6); text-decoration: none; }
+    footer a:hover { color: var(--paper); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 4rem 2rem; }
+      .about-grid,
+      .q-grid,
+      .org-grid { grid-template-columns: 1fr; }
+      .timeline::before { left: 4rem; }
+      .tl-item { grid-template-columns: 4rem 1fr; }
+      nav ul { display: none; }
+      .container { padding: 0 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">OLM ✕ GenAI <span>Workshop</span></div>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#programme">Programme</a></li>
+    <li><a href="#questions">Questions</a></li>
+    <li><a href="#organizers">Organizers</a></li>
+    <li><a href="#participate">Participate</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">AIED 2026 Workshop · Festival of Learning · Seoul</div>
+    <h1 class="hero-title">Open Learner Models <br/> in the Age of <em>Generative AI</em></h1>
+    <p class="hero-subtitle">A half-day workshop on the tension between LLM fluency and OLM integrity.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">Venue</span>
+        <span class="value">AIED 2026 — Seoul, Republic of Korea</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Format</span>
+        <span class="value">Half-day · In-person · Interactive</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Audience</span>
+        <span class="value">AIED, EDM, L@S, Learning Analytics</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Size</span>
+        <span class="value">~15–25 participants</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="section-label">Background</div>
+    <h2 class="section-title">What is at stake?</h2>
+    <hr class="rule" />
+    <div class="about-grid">
+      <div class="about-body">
+        <p>The AIED community has for decades established why transparency, accuracy, and learner agency matter in educational AI. Open Learner Models (OLMs) give learners the ability to inspect, contest, and negotiate the system's representation of their knowledge — creating conditions for genuine metacognition and self-regulation.</p>
+        <p>Large Language Models now offer something seductive: rich, naturalistic explanations of learner states generated at low cost. One could simply feed a learner's interaction history into an LLM and let it answer "what do I struggle with?" or "what should I do next?" The LLM practically <em>becomes</em> the OLM.</p>
+        <p>But LLMs do not employ structured, inspectable representations. Their explanations can be fluent yet wrong, confident yet ungrounded. Allowing fluency to substitute for validity would undermine commitments the field has worked hard to establish.</p>
+        <p>This workshop surfaces that tension sharply — and works toward a research agenda for navigating it.</p>
+      </div>
+      <div class="tension-box">
+        <h3>Open research questions</h3>
+        <ul>
+          <li>What must an LLM-generated explanation do to qualify as a genuinely open model?</li>
+          <li>How do we evaluate whether LLM-mediated OLMs are accurate, fair, and trusted by learners?</li>
+          <li>What safeguards are needed when natural language explanations can be fluent but wrong?</li>
+          <li>What does it mean for a learner to contest a representation they cannot inspect?</li>
+          <li>How might collaborative and group-level learner modeling change when LLMs mediate the representation?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMME -->
+<section class="programme" id="programme">
+  <div class="container">
+    <div class="section-label">Schedule</div>
+    <h2 class="section-title">Workshop Programme</h2>
+    <hr class="rule" />
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-time">0:00</div>
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-duration">30 minutes</div>
+          <div class="tl-title">Welcome &amp; Opening Provocations</div>
+          <p class="tl-desc">Three invited speakers each deliver a tight 5-minute position statement followed by 5 minutes of immediate reaction from the room. Statements are deliberately in tension: one arguing LLMs finally make OLMs scalable; one arguing LLM-mediated explanations threaten the core principle of inspectability; one asking whether any of this serves the people being modeled. The goal is not to resolve but to surface the tension sharply.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">0:30</div>
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-duration">45 minutes</div>
+          <div class="tl-title">State-of-the-Art Presentation</div>
+          <p class="tl-desc">A workshop organizer presents foundational work in Learner Modeling and OLMs — empirical studies, system designs, theoretical frameworks — and approaches at the OLM–LLM intersection, to ground the audience in what is already being attempted and where gaps remain. Participants contribute short presentations of their own work.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">1:15</div>
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-duration">60 minutes</div>
+          <div class="tl-title">Hands-On Design Challenge</div>
+          <p class="tl-desc">Small groups (3–4 participants, mixed across career stage and background) receive a shared scenario: a learner interaction trace from a realistic educational context (programming task, collaborative discussion, or writing exercise). Each group designs how an LLM-enhanced OLM would explain the learner's state to three audiences — the learner, a teacher, and a peer — while explicitly addressing a constraint card of core OLM principles: accuracy, inspectability, learner agency, contestability. Groups then rotate to review each other's designs.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">2:15</div>
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-duration">30 minutes</div>
+          <div class="tl-title">Synthesis</div>
+          <p class="tl-desc">Organizers and participants map findings onto a shared board organized around three questions: What must an OLM preserve even when LLMs are involved? Where does LLM integration genuinely add value? What research does not yet exist? The board becomes a rough but collectively owned research agenda.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">2:45</div>
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-duration">15 minutes</div>
+          <div class="tl-title">Closing &amp; Next Steps</div>
+          <p class="tl-desc">Each group nominates one "non-negotiable" principle for LLM-enhanced OLMs. The workshop closes by identifying two or three concrete follow-on actions: a position paper to co-author, a special issue to propose, or a follow-up workshop at a subsequent venue. Participants sign up for future actions before leaving.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- QUESTIONS -->
+<section class="questions" id="questions">
+  <div class="container">
+    <div class="section-label">Core Tensions</div>
+    <h2 class="section-title">What we will grapple with</h2>
+    <hr class="rule" style="border-color:#2a2a2a;" />
+    <div class="q-grid">
+      <div class="q-card">
+        <div class="q-num">01 / VALIDITY</div>
+        <p class="q-text">"What are the requirements for an LLM-generated explanation of a learner's state to count as a genuinely open model?"</p>
+      </div>
+      <div class="q-card">
+        <div class="q-num">02 / EVALUATION</div>
+        <p class="q-text">"How do we evaluate whether LLM-mediated OLMs are accurate, fair, and trusted by learners?"</p>
+      </div>
+      <div class="q-card">
+        <div class="q-num">03 / SAFEGUARDS</div>
+        <p class="q-text">"What safeguards are needed when natural language explanations can be fluent but wrong?"</p>
+      </div>
+      <div class="q-card">
+        <div class="q-num">04 / COLLABORATION</div>
+        <p class="q-text">"How might collaborative and group-level learner modeling change when LLMs mediate the representation?"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORGANIZERS -->
+<section class="organizers" id="organizers">
+  <div class="container">
+    <div class="section-label">Organizing Team</div>
+    <h2 class="section-title">Workshop Organizers</h2>
+    <hr class="rule" />
+    <div class="org-grid">
+
+      <div class="org-card">
+        <div class="org-initial">IC</div>
+        <div class="org-name">Prof. Dr. Irene-Angelica Chounta</div>
+        <div class="org-affil">University of Duisburg-Essen, Germany</div>
+        <p class="org-bio">Head of COLAPS research group. Focuses on computational learning analytics, AIED, and educational technologies. Expert consultant on AI in Education for the Council of Europe; member of the IAIED Society Executive Board.</p>
+      </div>
+
+      <div class="org-card">
+        <div class="org-initial">TN</div>
+        <div class="org-name">Prof. Dr. Tomohiro Nagashima</div>
+        <div class="org-affil">Saarland University &amp; Harvard University</div>
+        <p class="org-bio">Tenure-Track Junior Professor of Technology-Enhanced Learning. Interdisciplinary research at the intersection of Learning Sciences and HCI. Ph.D. from Carnegie Mellon University; M.A. from Stanford University.</p>
+      </div>
+
+      <div class="org-card">
+        <div class="org-initial">DZ</div>
+        <div class="org-name">Dr. Diego Zapata-Rivera</div>
+        <div class="org-affil">Educational Testing Service, Princeton, USA</div>
+        <p class="org-bio">Distinguished Presidential Appointee at ETS. Research on open learner modeling, Bayesian student modeling, conversation-based and game-based assessment. Co-PI of NSF AI INVITE Institute.</p>
+      </div>
+
+      <div class="org-card">
+        <div class="org-initial">KS</div>
+        <div class="org-name">Kaimao Sheng</div>
+        <div class="org-affil">University of Duisburg-Essen, Germany</div>
+        <p class="org-bio">PhD candidate in Human-Centered Computing and Cognitive Science. Research on computational representations of learning processes and AI-based models that bridge cognitive theory and implementation.</p>
+      </div>
+
+      <div class="org-card">
+        <div class="org-initial">MA</div>
+        <div class="org-name">Mohamed Abdelmagied</div>
+        <div class="org-affil">University of Duisburg-Essen, Germany</div>
+        <p class="org-bio">M.Sc. candidate in Computer Engineering. Research on how generative AI can support learners through transparent, interactive OLMs with a focus on negotiable learner models, agency, and metacognition.</p>
+      </div>
+
+      <div class="org-card" style="background: var(--paper);">
+        <div style="height:100%;display:flex;flex-direction:column;justify-content:center;padding:1rem 0;">
+          <p style="font-family:'Courier New',Courier,monospace;font-size:0.72rem;color:var(--muted);line-height:1.8;">Multidisciplinary team spanning<br/>Learning Analytics · AIED<br/>Learning Sciences · HCI<br/>Computer Science · Assessment</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="participate">
+  <div class="container">
+    <div class="section-label">Join Us</div>
+    <h2 class="section-title">Participate in the Workshop</h2>
+    <p>The workshop targets researchers and practitioners in AIED, EDM, and L@S working on learning analytics, learner and user modeling, and educational technology. No technical prerequisite — designed to be productive for both system builders and educational researchers.</p>
+    <a href="/cdn-cgi/l/email-protection#69001b0c070c4408070e0c05000a08470a01061c071d08291c0700440d1c0c470d0c" class="btn solid">Express Interest</a>
+    <a href="https://aied2026.org" class="btn" target="_blank" rel="noopener">AIED 2026 Conference</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>OLMs in the Age of GenAI · AIED 2026 · Festival of Learning · Seoul, Republic of Korea</span>
+  <span>
+    <a href="https://www.uni-due.de/colaps/" target="_blank" rel="noopener">COLAPS @ UDE</a>
+    &nbsp;·&nbsp;
+    Contact: <a href="/cdn-cgi/l/email-protection#117863747f743c707f76747d7872703f7

@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MathMate — Sam's Practice Session</title>
+<style>
+  /* ── Reset & base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+
+  :root {
+    --bg:        #FAFAF7;
+    --surface:   #FFFFFF;
+    --slate:     #2C3E50;
+    --slate-mid: #4A5568;
+    --slate-lt:  #718096;
+    --rule:      #E2E8E4;
+    --teal:      #2A9D8F;
+    --teal-lt:   #E6F4F3;
+    --amber:     #E9C46A;
+    --amber-lt:  #FDF6E3;
+    --coral:     #E76F51;
+    --coral-lt:  #FDF0EC;
+    --green:     #2D6A4F;
+    --green-lt:  #EAF4EE;
+    --purple:    #6B46C1;
+    --purple-lt: #F0EBFF;
+    --radius:    10px;
+    --shadow:    0 2px 12px rgba(44,62,80,0.07);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--slate);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    background: var(--slate);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    height: 52px;
+    flex-shrink: 0;
+  }
+  .topbar-logo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .topbar-logo .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+  .topbar-meta {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+    display: flex;
+    gap: 1.5rem;
+  }
+  .topbar-meta span { color: rgba(255,255,255,0.85); }
+  .session-timer {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  /* ── Main layout ── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 580px;
+    grid-template-rows: 1fr 44px;
+    flex: 1;
+    gap: 0;
+    overflow: hidden;
+    height: calc(100vh - 52px);
+  }
+
+  /* ── Exercise panel (left) ── */
+  .exercise-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    overflow-y: auto;
+    padding: 2rem 2.5rem;
+    border-right: 1px solid var(--rule);
+  }
+
+  .progress-bar-wrap {
+    margin-bottom: 1.5rem;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--slate-lt);
+    margin-bottom: 0.4rem;
+  }
+  .progress-track {
+    height: 6px;
+    background: var(--rule);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+
+  .q-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem 2rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .q-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    background: var(--teal-lt);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+  }
+  .q-op-tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--slate-lt);
+    background: var(--bg);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid var(--rule);
+  }
+  .q-timer {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--slate-lt);
+    margin-left: auto;
+  }
+
+  .q-equation {
+    font-size: 3.2rem;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    color: var(--slate);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.75rem;
+    text-align: center;
+    padding: 1rem 0;
+  }
+  .q-equation .blank {
+    display: inline-block;
+    min-width: 80px;
+    border-bottom: 3px solid var(--teal);
+    color: var(--teal);
+    text-align: center;
+  }
+
+  .answer-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .answer-input {
+    flex: 1;
+    font-size: 1.6rem;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 0.65rem 1rem;
+    outline: none;
+    background: var(--bg);
+    color: var(--slate);
+    transition: border-color 0.2s;
+  }
+  .answer-input:focus { border-color: var(--teal); background: white; }
+  .answer-input.correct { border-color: var(--green); background: var(--green-lt); color: var(--green); }
+  .answer-input.incorrect { border-color: var(--coral); background: var(--coral-lt); color: var(--coral); }
+
+  .btn-check {
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn-check:hover { background: #238276; }
+  .btn-check:active { transform: scale(0.97); }
+  .btn-check:disabled { background: var(--rule); color: var(--slate-lt); cursor: not-allowed; }
+
+  .feedback-box {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback-box.correct { background: var(--green-lt); color: var(--green); border: 1px solid #b7d9c4; }
+  .feedback-box.incorrect { background: var(--coral-lt); color: #c0422a; border: 1px solid #f5c4b8; }
+  .feedback-box.retry { background: var(--amber-lt); color: #8a6200; border: 1px solid #f0d88a; }
+
+  .btn-next {
+    margin-top: 1rem;
+    width: 100%;
+    background: var(--slate);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: none;
+    transition: background 0.2s;
+  }
+  .btn-next:hover { background: #3d5166; }
+
+  /* ── Trace log ── */
+  .trace-panel {
+    grid-column: 1;
+    background: var(--surface);
+    border-top: 1px solid var(--rule);
+    padding: 0.4rem 1.5rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+    overflow-x: auto;
+    align-items: center;
+    flex-shrink: 0;
+    height: 44px;
+  }
+  .trace-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--slate-lt);
+    font-weight: 600;
+    white-space: nowrap;
+    margin-right: 0.4rem;
+    flex-shrink: 0;
+  }
+  .trace-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+    cursor: default;
+  }
+  .trace-dot.pending  { background: var(--rule); color: var(--slate-lt); }
+  .trace-dot.correct  { background: var(--green-lt); color: var(--green); border: 1.5px solid #b7d9c4; }
+  .trace-dot.incorrect{ background: var(--coral-lt); color: var(--coral); border: 1.5px solid #f5c4b8; }
+  .trace-dot.retry    { background: var(--amber-lt); color: #8a6200; border: 1.5px solid #f0d88a; }
+  .trace-dot.current  { background: var(--teal); color: white; box-shadow: 0 0 0 3px var(--teal-lt); }
+
+  /* ── OLM Panel (right) ── */
+  .olm-panel {
+    grid-row: 1 / 3;
+    background: var(--surface);
+    border-left: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .olm-header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--slate);
+    color: white;
+  }
+  .olm-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.2rem;
+  }
+  .olm-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--teal);
+  }
+  .olm-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.55);
+  }
+  .olm-tabs {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem 1.25rem 0;
+    background: var(--slate);
+    border-bottom: 1px solid var(--rule);
+  }
+  .olm-tab {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    color: rgba(255,255,255,0.5);
+    background: transparent;
+    border: none;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .olm-tab:hover { color: rgba(255,255,255,0.85); }
+  .olm-tab.active {
+    background: var(--bg);
+    color: var(--slate);
+  }
+  .olm-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+  }
+
+  /* Tab contents */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── Knowledge state tab ── */
+  .operation-block {
+    margin-bottom: 1.25rem;
+  }
+  .op-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+  .op-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .op-count {
+    font-size: 0.68rem;
+    color: var(--slate-lt);
+  }
+  /* Uncertainty range bar — the signature element */
+  .uncertainty-bar {
+    height: 12px;
+    background: var(--rule);
+    border-radius: 99px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0.3rem;
+  }
+  .u-range {
+    position: absolute;
+    height: 100%;
+    border-radius: 99px;
+    opacity: 0.35;
+    transition: all 0.6s ease;
+  }
+  .u-point {
+    position: absolute;
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+    transition: all 0.6s ease;
+  }
+  .op-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.62rem;
+    color: var(--slate-lt);
+    font-style: italic;
+  }
+  .op-note {
+    font-size: 0.72rem;
+    color: var(--slate-mid);
+    font-family: Georgia, serif;
+    font-style: italic;
+    line-height: 1.4;
+    margin-top: 0.3rem;
+  }
+
+  .olm-divider {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 1rem 0;
+  }
+
+  .uncertainty-legend {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.65rem;
+    color: var(--slate-lt);
+    margin-bottom: 1rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg);
+    border-radius: 6px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.3rem; }
+  .legend-range { width: 24px; height: 8px; border-radius: 99px; opacity: 0.35; }
+  .legend-point { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* ── Evidence tab ── */
+  .evidence-item {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-left: 3px solid var(--rule);
+    position: relative;
+  }
+  .evidence-item.supports { border-left-color: var(--green); }
+  .evidence-item.flags    { border-left-color: var(--amber); }
+  .evidence-item.unclear  { border-left-color: var(--slate-lt); }
+
+  .ev-q { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--slate-lt); margin-bottom: 0.3rem; }
+  .ev-text { font-size: 0.8rem; font-family: Georgia, serif; font-style: italic; color: var(--slate); line-height: 1.45; }
+  .ev-caveat { font-size: 0.68rem; color: var(--amber); margin-top: 0.3rem; }
+
+  /* ── Reflection tab ── */
+  .reflection-prompt {
+    background: var(--purple-lt);
+    border-radius: 8px;
+    padding: 0.85rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid #d9cdf5;
+  }
+  .rp-icon { font-size: 1.1rem; margin-bottom: 0.3rem; }
+  .rp-text { font-size: 0.85rem; font-family: Georgia, serif; color: var(--slate); line-height: 1.5; }
+  .rp-input {
+    width: 100%;
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d9cdf5;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-family: Georgia, serif;
+    color: var(--slate);
+    background: white;
+    resize: none;
+    height: 60px;
+    outline: none;
+  }
+  .rp-input:focus { border-color: var(--purple); }
+  .btn-reflect {
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    background: var(--purple);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  /* ── Contestation UI ── */
+  .contest-banner {
+    background: var(--amber-lt);
+    border: 1px solid #f0d88a;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .contest-banner.visible { display: block; }
+  .cb-title { font-size: 0.72rem; font-weight: 700; color: #8a6200; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.3rem; }
+  .cb-body { font-size: 0.8rem; color: #8a6200; line-height: 1.4; margin-bottom: 0.6rem; }
+  .cb-actions { display: flex; gap: 0.5rem; }
+  .cb-btn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid;
+  }
+  .cb-btn.agree    { background: var(--amber); color: #5a3f00; border-color: #c9a040; }
+  .cb-btn.disagree { background: white; color: #8a6200; border-color: #f0d88a; }
+
+  .contest-trigger {
+    font-size: 0.7rem;
+    color: var(--slate-lt);
+    text-decoration: underline;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 0.4rem;
+  }
+  .contest-trigger:hover { color: var(--slate); }
+
+  /* ── Session summary (shown at end) ── */
+  .session-summary {
+    display: none;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .summary-score {
+    font-size: 3rem;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    color: var(--teal);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .summary-label { font-size: 0.85rem; color: var(--slate-lt); margin-bottom: 1.5rem; }
+
+  /* ── Tooltip ── */
+  [data-tip] { position: relative; cursor: help; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--slate);
+    color: white;
+    font-size: 0.68rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  /* ── Animations ── */
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+  .pulsing { animation: pulse 1.5s infinite; }
+  @keyframes slideIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform:translateY(0); } }
+  .slide-in { animation: slideIn 0.3s ease forwards; }
+
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="dot"></div>
+    MathMate
+  </div>
+  <div class="topbar-meta">
+    Learner: <span>Sam</span> &nbsp;·&nbsp; Session: <span>Arithmetic Practice</span>
+  </div>
+  <div class="session-timer" id="sessionTimer">00:00</div>
+</div>
+
+<!-- Main grid -->
+<div class="main">
+
+  <!-- ── Exercise panel ── -->
+  <div class="exercise-panel" id="exercisePanel">
+
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span>Question <span id="qNumLabel">1</span> of 20</span>
+        <span id="scoreLabel">0 correct</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="q-card" id="qCard">
+      <div class="q-meta">
+        <div class="q-num" id="qNumBadge">Q 1</div>
+        <div class="q-op-tag" id="qOpTag">Addition</div>
+        <div class="q-timer" id="qTimer">0s</div>
+      </div>
+      <div class="q-equation" id="qEquation">47 + 35 = <span class="blank" id="answerBlank">?</span></div>
+      <div class="answer-row">
+        <input type="number" class="answer-input" id="answerInput" placeholder="?" autocomplete="off" />
+        <button class="btn-check" id="btnCheck">Check ✓</button>
+      </div>
+      <div class="feedback-box" id="feedbackBox"></div>
+      <button class="btn-next" id="btnNext">Next question →</button>
+    </div>
+
+  </div>
+
+  <!-- ── Trace bar ── -->
+  <div class="trace-panel" id="tracePanel">
+    <span class="trace-label">Session trace</span>
+    <div id="traceDots" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:0.3rem;align-items:center;"></div>
+  </div>
+
+  <!-- ── OLM Panel ── -->
+  <div class="olm-panel">
+    <div class="olm-header">
+      <div class="olm-header-top">
+        <div class="olm-title">Open Learner Model</div>
+      </div>
+      <div class="olm-subtitle">What MathMate thinks it knows about Sam — tap any claim to respond</div>
+    </div>
+    <div class="olm-tabs">
+      <button class="olm-tab active" id="tab-btn-knowledge">Knowledge</button>
+      <button class="olm-tab" id="tab-btn-evidence">Evidence</button>
+      <button class="olm-tab" id="tab-btn-reflect">Reflect</button>
+    </div>
+    <div class="olm-body">
+
+      <!-- Knowledge tab -->
+      <div class="tab-content active" id="tab-knowledge">
+
+        <div class="uncertainty-legend">
+          <div class="legend-item">
+            <div class="legend-range" style="background:var(--teal);"></div>
+            Possible range
+          </div>
+          <div class="legend-item">
+            <div class="legend-point" style="background:var(--teal);"></div>
+            Best estimate
+          </div>
+          <span style="margin-left:auto;" data-tip="Wider bars = less certainty">⚠ bars show uncertainty</span>
+        </div>
+
+        <div id="opsBlocks"></div>
+
+        <hr class="olm-divider" />
+
+        <div class="contest-banner" id="contestBanner">
+          <div class="cb-title">Sam disagrees</div>
+          <div class="cb-body" id="contestMsg"></div>
+          <div class="cb-actions">
+            <button class="cb-btn agree" id="cbAgree">Record my view</button>
+            <button class="cb-btn disagree" id="cbDisagree">Keep original</button>
+          </div>
+        </div>
+
+        <div style="font-size:0.72rem;color:var(--slate-lt);line-height:1.5;">
+          Based on <span id="answeredCount">0</span> questions so far.
+          Wider bars mean less certainty — more practice reveals a clearer picture.
+          <br/><span class="contest-trigger" id="contestTrigger">Something look wrong? Tell MathMate →</span>
+        </div>
+      </div>
+
+      <!-- Evidence tab -->
+      <div class="tab-content" id="tab-evidence">
+        <p style="font-size:0.75rem;color:var(--slate-lt);margin-bottom:0.75rem;font-style:italic;">
+          Specific moments from this session that informed the knowledge model.
+        </p>
+        <div id="evidenceList">
+          <p style="font-size:0.8rem;color:var(--slate-lt);text-align:center;padding:2rem 0;">No evidence yet — answer some questions first.</p>
+        </div>
+      </div>
+
+      <!-- Reflect tab -->
+      <div class="tab-content" id="tab-reflect">
+        <div id="reflectPrompts">
+          <p style="font-size:0.8rem;color:var(--slate-lt);text-align:center;padding:2rem 0;">Reflection prompts will appear as you work through the session.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ── Question bank ──────────────────────────────────────────────────────────
+const QUESTIONS = [
+  { id:1,  op:'addition',       expr:'47 + 35',    ans:82,  display:'47 + 35 = ?' },
+  { id:2,  op:'addition',       expr:'124 + 89',   ans:213, display:'124 + 89 = ?' },
+  { id:3,  op:'subtraction',    expr:'200 − 64',   ans:136, display:'200 − 64 = ?' },
+  { id:4,  op:'multiplication', expr:'7 × 8',      ans:56,  display:'7 × 8 = ?' },
+  { id:5,  op:'multiplication', expr:'6 × 9',      ans:54,  display:'6 × 9 = ?' },
+  { id:6,  op:'multiplication', expr:'7 × 7',      ans:49,  display:'7 × 7 = ?' },
+  { id:7,  op:'multiplication', expr:'8 × 6',      ans:48,  display:'8 × 6 = ?' },
+  { id:8,  op:'division',       expr:'56 ÷ 7',     ans:8,   display:'56 ÷ 7 = ?' },
+  { id:9,  op:'division',       expr:'63 ÷ 9',     ans:7,   display:'63 ÷ 9 = ?' },
+  { id:10, op:'division',       expr:'144 ÷ 12',   ans:12,  display:'144 ÷ 12 = ?' },
+  { id:11, op:'addition',       expr:'348 + 275',  ans:623, display:'348 + 275 = ?' },
+  { id:12, op:'subtraction',    expr:'503 − 178',  ans:325, display:'503 − 178 = ?' },
+  { id:13, op:'multiplication', expr:'13 × 14',    ans:182, display:'13 × 14 = ?' },
+  { id:14, op:'division',       expr:'256 ÷ 16',   ans:16,  display:'256 ÷ 16 = ?' },
+  { id:15, op:'subtraction',    expr:'74 − 38',    ans:36,  display:'74 − 38 = ?' },
+  { id:16, op:'addition',       expr:'256 + 147',  ans:403, display:'256 + 147 = ?' },
+  { id:17, op:'multiplication', expr:'9 × 7',      ans:63,  display:'9 × 7 = ?' },
+  { id:18, op:'division',       expr:'72 ÷ 8',     ans:9,   display:'72 ÷ 8 = ?' },
+  { id:19, op:'subtraction',    expr:'300 − 127',  ans:173, display:'300 − 127 = ?' },
+  { id:20, op:'addition',       expr:'189 + 213',  ans:402, display:'189 + 213 = ?' },
+];
+
+const OPS = [
+  { key:'addition',       label:'Addition',       color:'#2A9D8F' },
+  { key:'subtraction',    label:'Subtraction',    color:'#E76F51' },
+  { key:'multiplication', label:'Multiplication', color:'#6B46C1' },
+  { key:'division',       label:'Division',       color:'#E9C46A' },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────
+let state = {
+  currentIdx: 0,
+  attempts: {},       // qId -> [{ answer, correct, time }]
+  traceLog: [],       // { qId, op, result:'correct'|'incorrect'|'retry-correct', time }
+  score: 0,
+  totalAnswered: 0,
+  qStartTime: Date.now(),
+  sessionStart: Date.now(),
+  qTimerInterval: null,
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function getCurrentQ() { return QUESTIONS[state.currentIdx]; }
+
+function opStats() {
+  const stats = {};
+  OPS.forEach(o => { stats[o.key] = { correct:0, total:0, retries:0 }; });
+  state.traceLog.forEach(e => {
+    if (!stats[e.op]) return;
+    stats[e.op].total++;
+    if (e.result === 'correct' || e.result === 'retry-correct') stats[e.op].correct++;
+    if (e.result === 'retry-correct') stats[e.op].retries++;
+  });
+  return stats;
+}
+
+// uncertainty: returns [low, estimate, high] as 0-1 fractions
+function uncertainty(correct, total) {
+  if (total === 0) return [0.1, 0.5, 0.9];
+  const p = correct / total;
+  const z = 1.645;
+  const denom = 1 + z*z/total;
+  const centre = (p + z*z/(2*total)) / denom;
+  const inner = Math.max(0, p*(1-p)/total + z*z/(4*total*total));
+  const margin = (z * Math.sqrt(inner)) / denom;
+  return [Math.max(0, centre - margin), p, Math.min(1, centre + margin)];
+}
+
+// ── UI Renderers ──────────────────────────────────────────────────────────
+function renderQuestion() {
+  const q = getCurrentQ();
+  document.getElementById('qNumLabel').textContent = state.currentIdx + 1;
+  document.getElementById('qNumBadge').textContent = `Q ${state.currentIdx + 1}`;
+  document.getElementById('qOpTag').textContent = q.op.charAt(0).toUpperCase() + q.op.slice(1);
+  const eqEl = document.getElementById('qEquation');
+  eqEl.textContent = '';
+  const parts = q.display.split('?');
+  eqEl.appendChild(document.createTextNode(parts[0]));
+  const blank = document.createElement('span');
+  blank.className = 'blank';
+  blank.id = 'answerBlank';
+  blank.textContent = '?';
+  eqEl.appendChild(blank);
+  if (parts[1]) eqEl.appendChild(document.createTextNode(parts[1]));
+  const inp = document.getElementById('answerInput');
+  inp.value = '';
+  inp.className = 'answer-input';
+  inp.disabled = false;
+  try { inp.focus(); } catch(e) {}
+  document.getElementById('btnCheck').disabled = false;
+  document.getElementById('feedbackBox').style.display = 'none';
+  document.getElementById('btnNext').style.display = 'none';
+  document.getElementById('progressFill').style.width = `${(state.currentIdx / QUESTIONS.length) * 100}%`;
+  document.getElementById('scoreLabel').textContent = `${state.score} correct`;
+
+  state.qStartTime = Date.now();
+  clearInterval(state.qTimerInterval);
+  state.qTimerInterval = setInterval(() => {
+    const sec = Math.floor((Date.now() - state.qStartTime) / 1000);
+    const el = document.getElementById('qTimer');
+    if (el) el.textContent = `${sec}s`;
+  }, 1000);
+
+  renderTraceDots();
+}
+
+function renderTraceDots() {
+  const container = document.getElementById('traceDots');
+  container.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'trace-dot';
+    dot.textContent = i + 1;
+    if (i < state.currentIdx) {
+      const log = state.traceLog.filter(e => e.qId === q.id);
+      const last = log[log.length - 1];
+      if (last) {
+        if (last.result === 'correct') dot.classList.add('correct');
+        else if (last.result === 'retry-correct') dot.classList.add('retry');
+        else dot.classList.add('incorrect');
+      }
+    } else if (i === state.currentIdx) {
+      dot.classList.add('current', 'pulsing');
+    } else {
+      dot.classList.add('pending');
+    }
+    container.appendChild(dot);
+  });
+}
+
+function renderOLM() {
+  const stats = opStats();
+  const container = document.getElementById('opsBlocks');
+  const totalAnswered = Object.values(stats).reduce((s,v) => s + v.total, 0);
+  document.getElementById('answeredCount').textContent = totalAnswered;
+
+  container.innerHTML = '';
+  OPS.forEach(op => {
+    const s = stats[op.key];
+    const [lo, est, hi] = uncertainty(s.correct, s.total);
+    const color = op.color;
+
+    const block = document.createElement('div');
+    block.className = 'operation-block slide-in';
+
+    let note = '';
+    if (s.total === 0) {
+      note = 'No questions yet.';
+    } else if (s.total <= 2) {
+      note = `Only ${s.total} question${s.total>1?'s':''} — too few to say much with confidence.`;
+    } else if (s.retries > 0 && s.correct === s.total) {
+      note = `Got all correct, but needed extra time on ${s.retries}. May be developing fluency.`;
+    } else if (est > 0.85) {
+      note = 'Looks strong — answers mostly quick and correct.';
+    } else if (est > 0.6) {
+      note = 'Some correct, some not — picture still forming.';
+    } else {
+      note = 'Several errors so far. Worth revisiting.';
+    }
+
+    block.innerHTML = `
+      <div class="op-header">
+        <div class="op-name">${op.label}</div>
+        <div class="op-count">${s.correct}/${s.total} correct</div>
+      </div>
+      <div class="uncertainty-bar">
+        <div class="u-range" style="background:${color};left:${lo*100}%;width:${(hi-lo)*100}%;"></div>
+        <div class="u-point" style="background:${color};left:calc(${est*100}% - 2px);"></div>
+      </div>
+      <div class="op-label-row"><span>unlikely</span><span>likely</span></div>
+      <div class="op-note">${note}</div>
+    `;
+    container.appendChild(block);
+  });
+}
+
+function renderEvidence() {
+  const list = document.getElementById('evidenceList');
+  if (state.traceLog.length === 0) {
+    list.innerHTML = '<p style="font-size:0.8rem;color:var(--slate-lt);text-align:center;padding:2rem 0;">No evidence yet — answer some questions first.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  const shown = state.traceLog.slice(-6).reverse();
+  shown.forEach(entry => {
+    const q = QUESTIONS.find(q => q.id === entry.qId);
+    const isRetry = entry.result === 'retry-correct';
+    const isCorrect = entry.result === 'correct';
+    const type = isCorrect ? 'supports' : isRetry ? 'flags' : 'unclear';
+    const icon = isCorrect ? '✓' : isRetry ? '↻' : '✗';
+
+    let text = '', caveat = '';
+    if (isCorrect) {
+      text = `Sam answered ${q.expr} correctly in ${entry.time}s.`;
+      if (entry.time < 6) text += ' Quick response — may suggest recall rather than calculation.';
+      else text += ' Took a moment — likely working it through.';
+    } else if (isRetry) {
+      text = `Sam got ${q.expr} wrong first, then correct on retry (${entry.time}s total).`;
+      caveat = 'Could be a slip, a misconception caught through reflection, or just more careful checking.';
+    } else {
+      text = `Sam answered ${q.expr} incorrectly (${entry.time}s). Not yet re-attempted.`;
+    }
+
+    const div = document.createElement('div');
+    div.className = `evidence-item ${type} slide-in`;
+    div.innerHTML = `
+      <div class="ev-q">${icon} ${q.op} · Q${q.id}</div>
+      <div class="ev-text">${text}</div>
+      ${caveat ? `<div class="ev-caveat">⚠ ${caveat}</div>` : ''}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function maybeAddReflection() {
+  const answered = state.traceLog.length;
+  const prompts = [];
+  const retries = state.traceLog.filter(e => e.result === 'retry-correct');
+  const wrong   = state.traceLog.filter(e => e.result === 'incorrect');
+  const fast    = state.traceLog.filter(e => e.result === 'correct' && e.time < 5);
+
+  if (answered === 5) {
+    prompts.push({ icon:'🤔', text:'You\'ve answered 5 questions. Which type felt easiest — adding, subtracting, multiplying, or dividing?' });
+  }
+  if (retries.length === 1 && answered <= 8) {
+    const q = QUESTIONS.find(q => q.id === retries[0].qId);
+    prompts.push({ icon:'💡', text:`You got ${q.expr} wrong the first time but right the second. Do you know what changed?` });
+  }
+  if (fast.length >= 3) {
+    prompts.push({ icon:'⚡', text:'Some questions you answered really quickly. How did those feel compared to the slower ones?' });
+  }
+  if (wrong.length >= 2) {
+    prompts.push({ icon:'🌱', text:'A couple of questions have been tricky. What do you think would help you practise those?' });
+  }
+  if (answered === 10) {
+    prompts.push({ icon:'🕐', text:'You\'re halfway through! Which question so far took you the longest? Why do you think that was?' });
+  }
+
+  const container = document.getElementById('reflectPrompts');
+  // Add only new prompts (avoid duplicates by text)
+  const existing = Array.from(container.querySelectorAll('.rp-text')).map(el => el.textContent);
+  prompts.forEach(p => {
+    if (existing.includes(p.text)) return;
+    const div = document.createElement('div');
+    div.className = 'reflection-prompt slide-in';
+
+    const icon = document.createElement('div');
+    icon.className = 'rp-icon';
+    icon.textContent = p.icon;
+
+    const txt = document.createElement('div');
+    txt.className = 'rp-text';
+    txt.textContent = p.text;
+
+    const ta = document.createElement('textarea');
+    ta.className = 'rp-input';
+    ta.placeholder = 'Type your thoughts here\u2026';
+
+    const btn = document.createElement('button');
+    btn.className = 'btn-reflect';
+    btn.textContent = 'Save';
+    btn.addEventListener('click', function() {
+      this.textContent = 'Saved \u2713';
+      this.disabled = true;
+      this.style.background = 'var(--green)';
+    });
+
+    div.appendChild(icon);
+    div.appendChild(txt);
+    div.appendChild(ta);
+    div.appendChild(btn);
+
+    container.insertBefore(div, container.firstChild);
+    if (container.querySelector('p')) container.querySelector('p').remove();
+  });
+}
+
+// ── Contestation ──────────────────────────────────────────────────────────
+let contestOp = null;
+function openContest() {
+  const ops = opStats();
+  // find the op with the most ambiguous estimate
+  let worst = null, worstScore = Infinity;
+  OPS.forEach(op => {
+    const s = ops[op.key];
+    if (s.total === 0) return;
+    const [,est] = uncertainty(s.correct, s.total);
+    if (est < worstScore) { worstScore = est; worst = op; }
+  });
+  if (!worst) return;
+  contestOp = worst.key;
+  document.getElementById('contestMsg').textContent =
+    `MathMate thinks Sam may find ${worst.label} difficult. Is that right? You can tell MathMate if you think it got this wrong.`;
+  document.getElementById('contestBanner').classList.add('visible');
+  switchTab('knowledge', document.querySelector('.olm-tab'));
+}
+
+function resolveContest(action) {
+  const banner = document.getElementById('contestBanner');
+  banner.classList.remove('visible');
+  if (action === 'recorded') {
+    // Add a note to evidence
+    const list = document.getElementById('evidenceList');
+    const div = document.createElement('div');
+    div.className = 'evidence-item unclear slide-in';
+    div.innerHTML = `
+      <div class="ev-q">✎ Sam's own view · ${contestOp}</div>
+      <div class="ev-text" style="font-style:normal;">Sam disagreed with MathMate's assessment of their ${contestOp} skill. This has been recorded and will be considered alongside the session data.</div>
+      <div class="ev-caveat">MathMate's estimate has not changed, but Sam's perspective is saved.</div>
+    `;
+    const existing = document.getElementById('evidenceList').querySelector('p');
+    if (existing) existing.remove();
+    document.getElementById('evidenceList').insertBefore(div, document.getElementById('evidenceList').firstChild);
+  }
+  contestOp = null;
+}
+
+// ── Check answer ─────────────────────────────────────────────────────────
+function checkAnswer() {
+  const q = getCurrentQ();
+  const inp = document.getElementById('answerInput');
+  const val = parseInt(inp.value.trim(), 10);
+  if (isNaN(val)) { try { inp.focus(); } catch(e) {} return; }
+
+  const elapsed = Math.round((Date.now() - state.qStartTime) / 1000);
+  clearInterval(state.qTimerInterval);
+
+  const attempts = state.attempts[q.id] || 0;
+  state.attempts[q.id] = attempts + 1;
+
+  const fb = document.getElementById('feedbackBox');
+  fb.style.display = 'block';
+  inp.disabled = true;
+  document.getElementById('btnCheck').disabled = true;
+
+  if (val === q.ans) {
+    inp.classList.add('correct');
+    const result = attempts > 0 ? 'retry-correct' : 'correct';
+    state.traceLog.push({ qId: q.id, op: q.op, result, time: elapsed });
+    if (result === 'correct') { state.score++; }
+    state.totalAnswered++;
+
+    if (result === 'correct') {
+      fb.className = 'feedback-box correct';
+      fb.textContent = elapsed < 6
+        ? '✓ Correct — and really quick! That looks automatic.'
+        : '✓ Correct! Good work thinking it through.';
+    } else {
+      fb.className = 'feedback-box retry';
+      fb.textContent = '✓ Correct this time! Taking more time helped.';
+    }
+    document.getElementById('btnNext').style.display = 'block';
+    renderOLM(); renderEvidence(); maybeAddReflection(); renderTraceDots();
+
+  } else {
+    if (attempts === 0) {
+      // First wrong attempt — allow retry
+      inp.classList.add('incorrect');
+      inp.disabled = false;
+      inp.value = '';
+      try { inp.focus(); } catch(e) {}
+      document.getElementById('btnCheck').disabled = false;
+      // Clear any existing timer before starting a new one
+      clearInterval(state.qTimerInterval);
+      state.qStartTime = Date.now();
+      state.qTimerInterval = setInterval(() => {
+        const sec = Math.round((Date.now() - state.qStartTime) / 1000);
+        const el = document.getElementById('qTimer');
+        if (el) el.textContent = `${sec}s`;
+      }, 1000);
+      state.attempts[q.id] = 1;
+      fb.className = 'feedback-box incorrect';
+      fb.textContent = `✗ Not quite — try again. Take your time.`;
+      // Update blank to show wrong answer then clear it
+      const blank = document.getElementById('answerBlank');
+      if (blank) { blank.textContent = val; setTimeout(() => { blank.textContent = '?'; }, 800); }
+      return; // exit early — don't fall through to the blanket update below
+    } else {
+      // Second wrong attempt — move on
+      inp.classList.add('incorrect');
+      state.traceLog.push({ qId: q.id, op: q.op, result: 'incorrect', time: elapsed });
+      state.totalAnswered++;
+      fb.className = 'feedback-box incorrect';
+      fb.textContent = `✗ The answer was ${q.ans}. We'll revisit this type of question.`;
+      document.getElementById('btnNext').style.display = 'block';
+      renderOLM(); renderEvidence(); maybeAddReflection(); renderTraceDots();
+    }
+  }
+  const blank = document.getElementById('answerBlank');
+  if (blank) blank.textContent = val;
+}
+
+function nextQuestion() {
+  state.currentIdx++;
+  if (state.currentIdx >= QUESTIONS.length) {
+    showSummary();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showSummary() {
+  clearInterval(state.qTimerInterval);
+  const panel = document.getElementById('exercisePanel');
+  panel.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'q-card';
+  card.style.cssText = 'text-align:center;padding:2.5rem;';
+
+  const badge = document.createElement('div');
+  badge.style.cssText = 'font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--teal);margin-bottom:1rem;';
+  badge.textContent = 'Session Complete';
+
+  const score = document.createElement('div');
+  score.className = 'summary-score';
+  score.textContent = `${state.score}/20`;
+
+  const lbl = document.createElement('div');
+  lbl.className = 'summary-label';
+  lbl.textContent = 'questions answered correctly';
+
+  const msg = document.createElement('p');
+  msg.style.cssText = 'font-size:0.85rem;color:var(--slate-mid);max-width:360px;margin:0 auto 1.5rem;line-height:1.6;font-family:Georgia,serif;';
+  msg.innerHTML = 'Great work finishing the session, Sam! Check the <strong>Open Learner Model</strong> on the right to see what MathMate noticed \u2014 and don\u2019t forget you can tell it if anything looks wrong.';
+
+  const btn = document.createElement('button');
+  btn.className = 'btn-check';
+  btn.textContent = 'Start a new session';
+  btn.addEventListener('click', () => { try { location.reload(); } catch(e) {} });
+
+  card.appendChild(badge);
+  card.appendChild(score);
+  card.appendChild(lbl);
+  card.appendChild(msg);
+  card.appendChild(btn);
+  panel.appendChild(card);
+
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('scoreLabel').textContent = `${state.score} correct`;
+  renderOLM(); renderEvidence();
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────
+function switchTab(tab, el) {
+  document.querySelectorAll('.olm-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ── Session timer ─────────────────────────────────────────────────────────
+try {
+  setInterval(() => {
+    try {
+      const s = Math.floor((Date.now() - state.sessionStart) / 1000);
+      const m = Math.floor(s / 60).toString().padStart(2,'0');
+      const sec = (s % 60).toString().padStart(2,'0');
+      const el = document.getElementById('sessionTimer');
+      if (el) el.textContent = `${m}:${sec}`;
+    } catch(e) {}
+  }, 1000);
+} catch(e) {}
+
+// ── Enter key submits ──────────────────────────────────────────────────────
+try {
+  document.addEventListener('keydown', e => {
+    try {
+      if (e.key === 'Enter') {
+        const btnCheck = document.getElementById('btnCheck');
+        const btnNext  = document.getElementById('btnNext');
+        if (btnNext && btnNext.style.display !== 'none') btnNext.click();
+        else if (btnCheck && !btnCheck.disabled) btnCheck.click();
+      }
+    } catch(e) {}
+  });
+} catch(e) {}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+try {
+  // Button listeners
+  document.getElementById('btnCheck').addEventListener('click', checkAnswer);
+  document.getElementById('btnNext').addEventListener('click', nextQuestion);
+  document.getElementById('cbAgree').addEventListener('click', () => resolveContest('recorded'));
+  document.getElementById('cbDisagree').addEventListener('click', () => resolveContest('dismiss'));
+  document.getElementById('contestTrigger').addEventListener('click', openContest);
+
+  // Tab listeners
+  document.getElementById('tab-btn-knowledge').addEventListener('click', function() { switchTab('knowledge', this); });
+  document.getElementById('tab-btn-evidence').addEventListener('click', function() { switchTab('evidence', this); });
+  document.getElementById('tab-btn-reflect').addEventListener('click', function() { switchTab('reflect', this); });
+
+  renderQuestion();
+  renderOLM();
+} catch(e) {
+  console.error('Init error:', e);
+}
+</script>
+</body>
+</html>

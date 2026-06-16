@@ -1,0 +1,24 @@
+session_id,learner_id,timestamp,event_num,question_id,operation,expression,correct_answer,learner_answer,attempt_num,result,time_on_task_sec,cumulative_time_sec,session_score_at_event
+S001,sam,2026-06-16T09:00:00,1,1,addition,47 + 35,82,,0,session_start,0,0,0
+S001,sam,2026-06-16T09:00:12,2,1,addition,47 + 35,82,82,1,correct,12,12,1
+S001,sam,2026-06-16T09:00:20,3,2,addition,124 + 89,213,203,1,incorrect,8,20,1
+S001,sam,2026-06-16T09:00:54,4,2,addition,124 + 89,213,213,2,retry-correct,34,54,1
+S001,sam,2026-06-16T09:01:04,5,3,subtraction,200 - 64,136,144,1,incorrect,10,64,1
+S001,sam,2026-06-16T09:01:45,6,3,subtraction,200 - 64,136,136,2,retry-correct,41,105,1
+S001,sam,2026-06-16T09:01:48,7,4,multiplication,7 x 8,56,56,1,correct,3,108,2
+S001,sam,2026-06-16T09:01:52,8,5,multiplication,6 x 9,54,54,1,correct,4,112,3
+S001,sam,2026-06-16T09:01:54,9,6,multiplication,7 x 7,49,49,1,correct,2,114,4
+S001,sam,2026-06-16T09:01:57,10,7,multiplication,8 x 6,48,42,1,incorrect,3,117,4
+S001,sam,2026-06-16T09:02:25,11,7,multiplication,8 x 6,48,48,2,retry-correct,28,145,4
+S001,sam,2026-06-16T09:02:30,12,8,division,56 / 7,8,8,1,correct,5,150,5
+S001,sam,2026-06-16T09:02:34,13,9,division,63 / 9,7,6,1,incorrect,4,154,5
+S001,sam,2026-06-16T09:02:53,14,9,division,63 / 9,7,7,2,retry-correct,19,173,5
+S001,sam,2026-06-16T09:03:15,15,10,division,144 / 12,12,11,1,incorrect,22,195,5
+S001,sam,2026-06-16T09:04:00,16,10,division,144 / 12,12,12,2,retry-correct,45,240,5
+S001,sam,2026-06-16T09:04:58,17,11,addition,348 + 275,623,613,1,incorrect,58,298,5
+S001,sam,2026-06-16T09:06:05,18,11,addition,348 + 275,623,623,2,retry-correct,67,365,5
+S001,sam,2026-06-16T09:06:36,19,12,subtraction,503 - 178,325,325,1,correct,31,396,6
+S001,sam,2026-06-16T09:07:28,20,13,multiplication,13 x 14,182,172,1,incorrect,52,448,6
+S001,sam,2026-06-16T09:08:20,21,13,multiplication,13 x 14,182,182,2,retry-correct,52,500,6
+S001,sam,2026-06-16T09:09:48,22,14,division,256 / 16,16,16,1,correct,88,588,7
+S001,sam,2026-06-16T09:10:00,23,,,,,,,,session_end,0,588,7
